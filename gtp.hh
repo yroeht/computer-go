@@ -6,6 +6,15 @@
 #include <set>
 #include <goban.hh>
 
+#ifndef __NAME
+# error A value must be defined for __NAME (try -D).
+#endif
+
+// cheap double expansion quoting trick...
+#define STR_(x) #x
+#define STR(x) STR_(x)
+#define __NAME_STR STR(__NAME)
+
 #ifndef __GOBAN_SIZE
 # error A value must be defined for __GOBAN_SIZE (try -D).
 #endif

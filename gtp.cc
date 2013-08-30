@@ -32,7 +32,7 @@ gtp_list_commands()
 void
 gtp_name()
 {
-  gtp_success("Goku");
+  gtp_success(__NAME_STR);
 }
 
 void
@@ -52,7 +52,7 @@ gtp_boardsize()
 {
   int new_size;
   std::cin >> new_size;
-  if (new_size == 13 || new_size == 19 || new_size == 7)
+  if (new_size == __GOBAN_SIZE)
     gtp_success("");
   else
     gtp_failure("unacceptable size");
