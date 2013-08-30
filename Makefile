@@ -31,7 +31,16 @@ mostlyclean:
 clean: mostlyclean
 	find . -name $(PROGRAM) -delete
 
-test: $(PROGRAM)
+test: test-twogtp
+
+test-human: $(PROGRAM)
+	gogui 								\
+	  -computer-white 						\
+	  -auto								\
+	  -size $(SIZE)							\
+	  -program $(PROGRAM)
+
+test-twogtp: $(PROGRAM)
 	gogui 								\
 	  -computer-both 						\
 	  -auto								\
