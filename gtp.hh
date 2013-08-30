@@ -6,7 +6,11 @@
 #include <set>
 #include <goban.hh>
 
-static Goban<13> goban;
+#ifndef __GOBAN_SIZE
+# error A value must be defined for __GOBAN_SIZE (try -D).
+#endif
+
+static Goban<__GOBAN_SIZE> goban;
 
 void gtp_name();
 void gtp_protocol_version();
