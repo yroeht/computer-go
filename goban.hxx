@@ -164,14 +164,12 @@ Goban<goban_size>::remove_stones(t_group* stones)
       for (auto neighbor : list_neighbors(stone.first, stone.second))
         this->cell(neighbor).get_group()->liberties.insert(stone);
       auto& cell = this->cell(stone);
-      auto& colorgroup = (cell.color == Black ? black_groups : white_groups);
+      (cell.color == Black ? black_groups : white_groups).remove(stones);
       cell.color = Empty;
-      colorgroup.remove(stones);
     }
 }
 
 template<int goban_size>
-//void
 t_position
 Goban<goban_size>::act_on_atari(t_color player)
 {
@@ -381,4 +379,21 @@ Goban<goban_size>::dump_moves()
       << m.second << std::endl;
   std::cerr << "End moves dump." << std::endl;
 
+}
+
+template<int goban_size>
+void
+Goban<goban_size>::reset()
+{
+  strong_links.clear();
+  white_groups.clear();
+  black_groups.clear();
+  potential_moves.clear();
+
+  for (auto i = 0; i < goban_size; ++i)
+    for (auto j = 0; j < goban_size; ++j)
+      {
+        board[i][j].color = Empty;
+        board[i][j].set_group(nullptr);
+      }
 }

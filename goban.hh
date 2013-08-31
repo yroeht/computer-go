@@ -67,8 +67,8 @@ public:
   void dump_groups();
   void dump_links();
   void play(unsigned short int, unsigned short int, t_color);
-  //void
   t_position act_on_atari(t_color player);
+  void reset();
 
 private:
   void      remove_stones(t_group*);

@@ -60,6 +60,7 @@ gtp_boardsize()
 void
 gtp_clear_board()
 {
+  goban.reset();
   gtp_success("");
 }
 
