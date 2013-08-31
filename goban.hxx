@@ -21,10 +21,9 @@
 
 
 inline
-Cell::Cell(unsigned int i, unsigned int j, t_color color)
+Cell::Cell(unsigned short i, unsigned short j, t_color color_)
 {
-  this->color = color;
-  if (color == Empty)
+  if (Empty == (this->color = color_))
     this->group = nullptr;
   else
     {
@@ -42,39 +41,39 @@ Cell::get_group()
 
 inline
 void
-Cell::set_group(t_group* group)
+Cell::set_group(t_group* group_)
 {
-  this->group = group;
+  this->group = group_;
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 Cell&
 Goban<goban_size>::cell(t_position stone)
 {
   return board[stone.first][stone.second];
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 Goban<goban_size>::Goban()
 {
-  for (auto i = 0; i < goban_size; ++i)
+  for (unsigned short i = 0; i < goban_size; ++i)
     {
       board.push_back(*new std::vector<Cell>);
-      for (auto j = 0; j < goban_size; ++j)
+      for (unsigned short j = 0; j < goban_size; ++j)
         board.back().push_back(*new Cell(i, j, Empty));
     }
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 t_stones
-Goban<goban_size>::get_liberties(unsigned int i, unsigned int j, t_color color)
+Goban<goban_size>::get_liberties(unsigned short i, unsigned short j, t_color color)
 {
   t_stones ret;
-  auto process = [&](unsigned int i, unsigned int j)
+  auto process = [&](unsigned short x, unsigned short y)
     {
-      auto& cell = board[i][j];
+      auto& cell = board[x][y];
       if (cell.color == Empty)
-        ret.insert(t_position(i, j));
+        ret.insert(t_position(x, y));
       else if (cell.color == color)
         for (auto s : cell.get_group()->liberties)
           ret.insert(s);
@@ -84,21 +83,21 @@ Goban<goban_size>::get_liberties(unsigned int i, unsigned int j, t_color color)
   return ret;
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 t_stones
-Goban<goban_size>::get_liberties(unsigned int i, unsigned int j)
+Goban<goban_size>::get_liberties(unsigned short i, unsigned short j)
 {
   return get_liberties(i, j, board[i][j].color);
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
-Goban<goban_size>::add_strong_links(unsigned int i, unsigned int j)
+Goban<goban_size>::add_strong_links(unsigned short i, unsigned short j)
 {
-  /*auto process = [&](int i, int j,
-                     int ii, int jj,
-                     int imin, int jmin,
-                     int imax, int jmax)
+  /*auto process = [&](unsigned short i, unsigned short j,
+                     unsigned short ii, unsigned short jj,
+                     unsigned short imin, unsigned short jmin,
+                     unsigned short imax, unsigned short jmax)
     {
   if (i > imin && ii < imax
       && j > jmin && jj < jmax
@@ -135,18 +134,18 @@ Goban<goban_size>::add_strong_links(unsigned int i, unsigned int j)
     strong_links.insert(t_strong_link(t_position(i+1, j), t_position(i,j+1)));
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 t_stones
-Goban<goban_size>::list_neighbors(unsigned int i, unsigned int j)
+Goban<goban_size>::list_neighbors(unsigned short i, unsigned short j)
 {
   assert(board[i][j].color != Empty);
 
   t_stones ret;
 
-  auto process = [&](unsigned int i, unsigned int j)
+  auto process = [&](unsigned short x, unsigned short y)
     {
-      if (board[i][j].color != Empty)
-        ret.insert(t_position(i, j));
+      if (board[x][y].color != Empty)
+        ret.insert(t_position(x, y));
     };
   ORTHOGONAL_APPLY(process, i, j);
   for (auto s : ret)
@@ -155,7 +154,7 @@ Goban<goban_size>::list_neighbors(unsigned int i, unsigned int j)
   return ret;
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
 Goban<goban_size>::remove_stones(t_group* stones)
 {
@@ -169,7 +168,7 @@ Goban<goban_size>::remove_stones(t_group* stones)
     }
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 t_position
 Goban<goban_size>::act_on_atari(t_color player)
 {
@@ -189,18 +188,19 @@ Goban<goban_size>::act_on_atari(t_color player)
 
   for (auto m : moves)
     if (std::count_if(moves.begin(), moves.end(),
-                     [=](move x) -> bool {return (x.first == m.first); })
+                      [=](move x) -> bool {return (x.first == m.first); })
         != 1)
-      ;//std::cerr << "duplicate move " << m.first.first << ", " << m.first.second << std::endl;
-
+      ; // this sucks balls. This shouldn't happen, but it does.
   potential_moves.clear();
   for (auto m : moves)
     {
       double oldlib = m.second->liberties.size();
-      double newlib = (double)get_liberties(m.first.first, m.first.second, player).size();
-      double newlib2 = (double)get_liberties(m.first.first, m.first.second, otherplayer).size();
+      double newlib = (double)get_liberties(m.first.first,
+                                            m.first.second, player).size();
+      double newli2 = (double)get_liberties(m.first.first,
+                                            m.first.second, otherplayer).size();
 
-      double w =  2*LIBERTY_REM * (newlib2 / oldlib);
+      double w =  2*LIBERTY_REM * (newli2 / oldlib);
       double w2 = LIBERTY_ADD * (newlib / oldlib);
       std::cerr << "move (" << m.first.first << ", " << m.first.second << ") w="
         << w << " w2=" << w2 << " oldlib=" << oldlib << " newlib=" << newlib << std::endl;
@@ -225,9 +225,9 @@ Goban<goban_size>::act_on_atari(t_color player)
   return best_move.first;
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
-Goban<goban_size>::play(unsigned short int i, unsigned short int j, t_color c)
+Goban<goban_size>::play(unsigned short i, unsigned short j, t_color c)
 {
   assert(board[i][j].color == Empty);
   assert(c != Empty);
@@ -264,11 +264,11 @@ Goban<goban_size>::play(unsigned short int i, unsigned short int j, t_color c)
   add_strong_links(i, j);
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
 Goban<goban_size>::determine_hoshis()
 {
-  auto insert = [&](unsigned short int i, unsigned short int j)
+  auto insert = [&](unsigned short i, unsigned short j)
     {
       hoshis.insert(*new t_position(i, j));
     };
@@ -302,13 +302,13 @@ Goban<goban_size>::determine_hoshis()
       << "), can't draw proper hoshi." << std::endl;
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
 Goban<goban_size>::dump()
 {
-  for (auto i = 0; i < goban_size; ++i)
+  for (unsigned short i = 0; i < goban_size; ++i)
     {
-      for (auto j = 0; j < goban_size; ++j)
+      for (unsigned short j = 0; j < goban_size; ++j)
         {
           auto cell = board[i][j].color;
           if (Black == cell)
@@ -329,7 +329,7 @@ Goban<goban_size>::dump()
   std::cout << std::endl;
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
 Goban<goban_size>::dump_groups()
 {
@@ -340,7 +340,7 @@ Goban<goban_size>::dump_groups()
   std::cout << "End groups dump." << std::endl;
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
 Goban<goban_size>::dump_group(t_groups groups)
 {
@@ -358,7 +358,7 @@ Goban<goban_size>::dump_group(t_groups groups)
     }
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
 Goban<goban_size>::dump_links()
 {
@@ -369,7 +369,7 @@ Goban<goban_size>::dump_links()
   std::cout << "End strong links dump." << std::endl;
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
 Goban<goban_size>::dump_moves()
 {
@@ -381,7 +381,7 @@ Goban<goban_size>::dump_moves()
 
 }
 
-template<int goban_size>
+template<unsigned short goban_size>
 void
 Goban<goban_size>::reset()
 {
@@ -390,8 +390,8 @@ Goban<goban_size>::reset()
   black_groups.clear();
   potential_moves.clear();
 
-  for (auto i = 0; i < goban_size; ++i)
-    for (auto j = 0; j < goban_size; ++j)
+  for (unsigned short i = 0; i < goban_size; ++i)
+    for (unsigned short j = 0; j < goban_size; ++j)
       {
         board[i][j].color = Empty;
         board[i][j].set_group(nullptr);

@@ -11,8 +11,8 @@ typedef enum {
     White,
 } t_color;
 
-typedef std::pair<unsigned short int,
-                  unsigned short int>       t_position;
+typedef std::pair<unsigned short,
+                  unsigned short>           t_position;
 
 typedef std::set<t_position>                t_stones;
 
@@ -40,12 +40,12 @@ private:
   t_group *group;
 
 public:
-  Cell(unsigned int, unsigned int, t_color color);
+  Cell(unsigned short, unsigned short, t_color color);
   t_group *get_group();
   void  set_group(t_group*);
 };
 
-template<int goban_size_>
+template<unsigned short goban_size_>
 class Goban
 {
 public:
@@ -66,17 +66,17 @@ public:
   void dump_moves();
   void dump_groups();
   void dump_links();
-  void play(unsigned short int, unsigned short int, t_color);
+  void play(unsigned short, unsigned short, t_color);
   t_position act_on_atari(t_color player);
   void reset();
 
 private:
   void      remove_stones(t_group*);
   void      dump_group(t_groups);
-  void      add_strong_links(unsigned int i, unsigned int j);
-  t_stones  list_neighbors(unsigned int i, unsigned int j);
-  t_stones  get_liberties(unsigned int i, unsigned int j);
-  t_stones  get_liberties(unsigned int i, unsigned int j, t_color c);
+  void      add_strong_links(unsigned short i, unsigned short j);
+  t_stones  list_neighbors(unsigned short i, unsigned short j);
+  t_stones  get_liberties(unsigned short i, unsigned short j);
+  t_stones  get_liberties(unsigned short i, unsigned short j, t_color c);
 };
 
 # include <goban.hxx>

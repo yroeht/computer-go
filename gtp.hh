@@ -21,15 +21,15 @@
 
 static Goban<__GOBAN_SIZE> goban;
 
-void gtp_name();
-void gtp_protocol_version();
-void gtp_version();
-void gtp_list_commands();
 void gtp_boardsize();
 void gtp_clear_board();
-void gtp_quit();
-void gtp_play();
 void gtp_genmove();
+void gtp_list_commands();
+void gtp_name();
+void gtp_play();
+void gtp_protocol_version();
+void gtp_quit() __attribute__((noreturn));
+void gtp_version();
 
 typedef void (*gtp_fn_ptr)();
 
@@ -53,6 +53,6 @@ static const t_command commands[] =
 
 #define COMMANDS 9
 
-void gtp_loop();
+void gtp_loop() __attribute__((noreturn));
 
 #endif /* GTP_HH */

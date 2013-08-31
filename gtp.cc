@@ -80,14 +80,14 @@ gtp_play()
   std::string move;
   std::cin >> move;
 
-  unsigned int row = move[0] - 'A';
+  unsigned short row = (unsigned short) move[0] - 'A';
   /* Deal with "I" */
   if (row >= 9)
     row--;
 
-  unsigned int line = move[1] - '0';
+  unsigned short line = (unsigned short) move[1] - '0';
   if (move[2] >= '0' && move[2] <= '9')
-    line = line * 10 + move[2] - '0';
+    line = line * 10 + (unsigned short) move[2] - '0';
   line--;
 
   goban.play(row, line, (color == 'B') ? Black : White);
@@ -111,7 +111,7 @@ gtp_genmove()
     move.first++;
 
   std::string s;
-  s.push_back('A' + move.first);
+  s.push_back('A' + (char) move.first);
   s += std::to_string(move.second + 1);
   gtp_success(s);
 }
