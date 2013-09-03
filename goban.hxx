@@ -113,44 +113,26 @@ template<unsigned short goban_size>
 void
 Goban<goban_size>::add_strong_links(unsigned short i, unsigned short j)
 {
-  /*auto process = [&](unsigned short i, unsigned short j,
-                     unsigned short ii, unsigned short jj,
-                     unsigned short imin, unsigned short jmin,
-                     unsigned short imax, unsigned short jmax)
+  auto process = [&](unsigned short ii, unsigned short jj)
     {
-  if (i > imin && ii < imax
-      && j > jmin && jj < jmax
-      && board[ii][j].color == Empty
-      && board[i][jj].color == Empty
-      && board[ii][jj].color == board[i][j].color)
-    strong_links.insert(t_strong_link(t_position(ii, j), t_position(i,jj)));
+      if ( board[ii][j].color == Empty
+          && board[i][jj].color == Empty
+          && board[ii][jj].color == board[i][j].color)
+        strong_links.insert(t_strong_link(t_position(ii, j), t_position(i,jj)));
     };
-*/
 
   /* NW */
-  if (i > 0 && j > 0
-      && board[i-1][j].color == Empty
-      && board[i][j-1].color == Empty
-      && board[i-1][j-1].color == board[i][j].color)
-    strong_links.insert(t_strong_link(t_position(i-1, j), t_position(i,j-1)));
+  if (i > 0 && j > 0)
+    process(i-1, j-1);
   /* NE */
-  if (i < goban_size-1 && j > 0
-      && board[i+1][j].color == Empty
-      && board[i][j-1].color == Empty
-      && board[i+1][j-1].color == board[i][j].color)
-    strong_links.insert(t_strong_link(t_position(i+1, j), t_position(i,j-1)));
+  if (i < goban_size-1 && j > 0)
+    process(i+1, j-1);
   /* SW */
-  if (i > 0 && j < goban_size-1
-      && board[i-1][j].color == Empty
-      && board[i][j+1].color == Empty
-      && board[i-1][j+1].color == board[i][j].color)
-    strong_links.insert(t_strong_link(t_position(i-1, j), t_position(i,j+1)));
+  if (i > 0 && j < goban_size-1)
+    process(i-1, j+1);
   /* SE */
-  if (i < goban_size-1 && j < goban_size-1
-      && board[i+1][j].color == Empty
-      && board[i][j+1].color == Empty
-      && board[i+1][j+1].color == board[i][j].color)
-    strong_links.insert(t_strong_link(t_position(i+1, j), t_position(i,j+1)));
+  if (i < goban_size-1 && j < goban_size-1)
+    process(i+1, j+1);
 }
 
 template<unsigned short goban_size>
