@@ -4,6 +4,8 @@
 # include <list>
 # include <set>
 # include <vector>
+# include <ostream>
+
 
 typedef enum {
     Empty,
@@ -78,6 +80,8 @@ private:
   t_stones  get_liberties(unsigned short i, unsigned short j);
   t_stones  get_liberties(unsigned short i, unsigned short j, t_color c);
 };
+
+std::ostream& operator<<(std::ostream& os, const t_position& pos);
 
 # include <goban.hxx>
 

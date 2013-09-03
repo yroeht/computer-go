@@ -21,6 +21,16 @@
 
 
 inline
+std::ostream& operator<<(std::ostream& os, const t_position& pos)
+{
+  char row = pos.first + 'A';
+  if (row >= 'I')
+    ++row;
+  os << row << pos.second + 1;
+  return os;
+}
+
+inline
 Cell::Cell(unsigned short i, unsigned short j, t_color color_)
 {
   if (Empty == (this->color = color_))
@@ -213,15 +223,12 @@ Goban<goban_size>::act_on_atari(t_color player)
                const t_weighed_stone& b) -> bool {
               return a.second < b.second;
               });
-  dump_moves();
 
   t_weighed_stone best_move(t_position(5, 5), -10000);
   for (auto m : potential_moves)
     if (m.second > best_move.second)
       best_move = m;
-  //play(best_move.first.first, best_move.first.second, player);
-  //potential_moves.erase(best_move);
-  std::cerr << "best move: " << best_move.first.first << ", " << best_move.first.second << std::endl;
+  std::cerr << "best move: " << best_move.first << std::endl;
   return best_move.first;
 }
 
@@ -348,12 +355,11 @@ Goban<goban_size>::dump_group(t_groups groups)
     {
       std::cout << " - " << group->liberties.size() << "L (" << group << ") ";
       for (auto cell : group->stones)
-        std::cout << "(" << cell.first << ", " << cell.second
-          << ", " << this->cell(cell).get_group() << ") ";
+        std::cout << "(" << cell << this->cell(cell).get_group() << ") ";
       std::cout << std::endl;
       std::cout << "   lib: ";
       for (auto cell : group->liberties)
-        std::cout << "(" << cell.first << ", " << cell.second<< ") ";
+        std::cout << cell;
       std::cout << std::endl;
     }
 }
@@ -364,8 +370,7 @@ Goban<goban_size>::dump_links()
 {
   std::cout << "Begin strong links dump:" << std::endl;
   for (auto link : strong_links)
-    std::cout << " - (" << link.first.first << ", " << link.first.second << ") ("
-      << link.second.first << ", " << link.second.second << ")" << std::endl;
+    std::cout << " - " << link.first << " " << link.second << std::endl;
   std::cout << "End strong links dump." << std::endl;
 }
 
@@ -375,8 +380,7 @@ Goban<goban_size>::dump_moves()
 {
   std::cerr << "Begin moves dump:" << std::endl;
   for (auto m : potential_moves)
-    std::cerr << " - (" << m.first.first << ", " << m.first.second << ") "
-      << m.second << std::endl;
+    std::cerr << " - " << m.first << " " << m.second << std::endl;
   std::cerr << "End moves dump." << std::endl;
 
 }
