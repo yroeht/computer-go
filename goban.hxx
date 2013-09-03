@@ -324,27 +324,31 @@ template<unsigned short goban_size>
 void
 Goban<goban_size>::dump()
 {
-  for (unsigned short i = 0; i < goban_size; ++i)
+  std::cerr << "  A B C D E F G H J K L M N" << std::endl;
+  for (unsigned short j = goban_size - 1; j < PASS; --j)
     {
-      for (unsigned short j = 0; j < goban_size; ++j)
+      std::cerr << (j+1) % 10 << " ";
+      for (unsigned short i = 0; i < goban_size; ++i)
         {
           auto cell = board[i][j].color;
           if (Black == cell)
-            std::cout << "B";
+            std::cerr << "X";
           else if (White == cell)
-            std::cout << "W";
+            std::cerr << "O";
           else if (Empty == cell
                    && hoshis.end() != std::find(hoshis.begin(),
                                                 hoshis.end(),
                                                 t_position(i, j)))
-            std::cout  << "*";
+            std::cerr  << "*";
           else
-            std::cout << ".";
-          std::cout << " ";
+            std::cerr << ".";
+          std::cerr << " ";
         }
-      std::cout << std::endl;
+      std::cerr << (j+1) % 10;
+      std::cerr << std::endl;
     }
-  std::cout << std::endl;
+  std::cerr << "  A B C D E F G H J K L M N" << std::endl;
+  std::cerr << std::endl;
 }
 
 template<unsigned short goban_size>
