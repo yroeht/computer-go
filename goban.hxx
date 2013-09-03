@@ -204,6 +204,7 @@ Goban<goban_size>::genmove_opening(t_color player)
           auto alternatives = get_liberties(candidate);
           if (!alternatives.empty())
             {
+              srand((unsigned int) time(0));
               auto it = alternatives.begin();
               std::advance(it, (unsigned long) rand() % alternatives.size());
               return *it;
