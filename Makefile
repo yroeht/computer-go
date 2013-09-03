@@ -15,7 +15,8 @@ DEFINES=-D__GOBAN_SIZE=$(SIZE) -D__NAME=$(NAME)
 # Gogui Twogtp related
 WHITE?=$(PROGRAM)
 BLACK?=$(PROGRAM)
-TWOGTP="gogui-twogtp -black $(BLACK) -white $(WHITE) -size $(SIZE)"
+TWOGTP="gogui-twogtp -black $(BLACK) -white $(WHITE) -size $(SIZE)
+TWOGTP+=-sgffile `date +%s` -debugtocomment -verbose"
 
 all: $(PROGRAM)
 
@@ -36,13 +37,14 @@ test: test-twogtp
 test-human: $(PROGRAM)
 	gogui 								\
 	  -computer-white 						\
-	  -auto								\
 	  -size $(SIZE)							\
 	  -program $(PROGRAM)
 
 test-twogtp: $(PROGRAM)
 	gogui 								\
 	  -computer-both 						\
-	  -auto								\
 	  -size $(SIZE)							\
 	  -program $(TWOGTP)
+
+test-dummy: $(PROGRAM)
+	BLACK=gogui-dummy make test-twogtp
