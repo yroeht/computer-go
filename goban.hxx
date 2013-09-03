@@ -245,17 +245,23 @@ Goban<goban_size>::genmove_liberty(t_color player)
 
   for (auto m : moves)
     {
-      auto neli = 0;
+      std::set<t_group*> neighbor_groups;
       double score = 1;
       std::cerr << "=> scoring " << m << std::endl;
       for (auto n : get_neighbors(m))
         {
-          std::cerr << " - " << n << " ";
           auto cell = this->cell(n);
-          auto g = cell.get_group();
-          auto lib = g->liberties.size();
+          auto group = cell.get_group();
+          auto lib = group->liberties.size();
           double prog = 0;
-          auto other = player == Black ? White : Black;
+          unsigned long neli = 0;
+
+          // A move affects groups, not single stones: if it is in contact with
+          // two stones of a group, it's effect is not doubled.
+          if (false == neighbor_groups.insert(group).second)
+            continue;
+          std::cerr << " - " << n << " ";
+
           if (cell.color == player)
             {
               neli = get_liberties(m.first, m.second, player).size();
@@ -265,7 +271,7 @@ Goban<goban_size>::genmove_liberty(t_color player)
             {
               neli = lib - 1;
               if (neli == 0)
-                prog = g->stones.size() + 1.5; // atari (regardless of group size) is +2.1
+                prog = group->stones.size() + 1.5; // atari (regardless of group size) is +2.1
               else
                 prog = (double) lib / neli;
             }
@@ -274,7 +280,7 @@ Goban<goban_size>::genmove_liberty(t_color player)
 
           std::cerr << " (progress = " << prog << ")";
           if (neli == 0)
-            std::cerr << "(kill " << g->stones.size() << ")";
+            std::cerr << "(kill " << group->stones.size() << ")";
           std::cerr << std::endl;
           score *= prog;
         }
