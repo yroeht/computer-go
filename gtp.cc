@@ -44,7 +44,7 @@ gtp_protocol_version()
 void
 gtp_version()
 {
-  gtp_success("0.1 dev");
+  gtp_success("0.1");
 }
 
 void
