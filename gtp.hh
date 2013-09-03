@@ -29,6 +29,7 @@ void gtp_name();
 void gtp_play();
 void gtp_protocol_version();
 void gtp_quit() __attribute__((noreturn));
+void gtp_showboard();
 void gtp_version();
 
 typedef void (*gtp_fn_ptr)();
@@ -49,9 +50,10 @@ static const t_command commands[] =
     {"quit",                gtp_quit},
     {"play",                gtp_play},
     {"genmove",             gtp_genmove},
+    {"showboard",           gtp_showboard},
 };
 
-#define COMMANDS 9
+#define COMMANDS 10
 
 void gtp_loop() __attribute__((noreturn));
 

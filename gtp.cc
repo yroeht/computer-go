@@ -121,6 +121,7 @@ gtp_loop()
 {
   while (true)
     {
+      gtp_showboard();
       std::string input;
       std::cin >> input;
       auto i = 0;
@@ -133,4 +134,9 @@ gtp_loop()
       if (i == COMMANDS)
         gtp_failure("Unsupported command<" + input + ">" );
     }
+}
+
+void gtp_showboard()
+{
+  goban.dump();
 }
