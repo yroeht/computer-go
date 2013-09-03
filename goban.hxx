@@ -201,7 +201,11 @@ Goban<goban_size>::genmove_opening()
         {
           auto alternatives = get_liberties(candidate);
           if (!alternatives.empty())
-            return *alternatives.begin();
+            {
+              auto it = alternatives.begin();
+              std::advance(it, rand() % alternatives.size());
+              return *it;
+            }
         }
     }
   return t_position(PASS, PASS);
