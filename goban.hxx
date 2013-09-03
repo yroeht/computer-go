@@ -192,13 +192,18 @@ template<unsigned short goban_size>
 t_position
 Goban<goban_size>::genmove_opening()
 {
-  if (white_groups.size() + black_groups.size() < starting_stones.size())
-    for (auto candidate : starting_stones)
+  for (auto candidate : starting_stones)
+    {
+      starting_stones.erase(candidate);
       if (this->cell(candidate).color == Empty)
+        return candidate;
+      else
         {
-          starting_stones.erase(candidate);
-          return candidate;
+          auto alternatives = get_liberties(candidate);
+          if (!alternatives.empty())
+            return *alternatives.begin();
         }
+    }
   return t_position(PASS, PASS);
 }
 
@@ -461,6 +466,7 @@ Goban<goban_size>::reset()
   white_groups.clear();
   black_groups.clear();
   potential_moves.clear();
+  determine_hoshis();
 
   for (unsigned short i = 0; i < goban_size; ++i)
     for (unsigned short j = 0; j < goban_size; ++j)
