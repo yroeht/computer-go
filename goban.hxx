@@ -76,7 +76,9 @@ Goban<goban_size>::Goban()
 
 template<unsigned short goban_size>
 t_stones
-Goban<goban_size>::get_liberties(unsigned short i, unsigned short j, t_color color)
+Goban<goban_size>::get_liberties(unsigned short i,
+                                 unsigned short j,
+                                 t_color color)
 {
   t_stones ret;
   auto process = [&](unsigned short x, unsigned short y)
