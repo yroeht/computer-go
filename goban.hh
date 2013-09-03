@@ -60,6 +60,8 @@ private:
   t_groups          black_groups;
   t_stones          hoshis;
   t_weighed_stones  potential_moves;
+  t_position        ko;
+  t_stones          starting_stones;
 
 public:
   Goban();

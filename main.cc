@@ -118,7 +118,6 @@ atari(Goban<n> g)
 
 int main()
 {
-  goban.determine_hoshis();
   gtp_loop();
   //Goban<19> goban;
   //eye_capture(goban);

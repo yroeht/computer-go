@@ -72,6 +72,8 @@ Goban<goban_size>::Goban()
       for (unsigned short j = 0; j < goban_size; ++j)
         board.back().push_back(*new Cell(i, j, Empty));
     }
+  ko = t_position(PASS, PASS);
+  determine_hoshis();
 }
 
 template<unsigned short goban_size>
@@ -232,11 +234,14 @@ Goban<goban_size>::act_on_atari(t_color player)
 }
 
 template<unsigned short goban_size>
-void
+bool
 Goban<goban_size>::play(unsigned short i, unsigned short j, t_color c)
 {
   assert(board[i][j].color == Empty);
   assert(c != Empty);
+  if (ko.first == i && ko.second == j)
+    return false;
+  ko = t_position(PASS, PASS);
 
   auto& colorgroup = (c == Black ? black_groups : white_groups);
   board[i][j] = *new Cell(i, j, c);
@@ -254,7 +259,12 @@ Goban<goban_size>::play(unsigned short i, unsigned short j, t_color c)
         {
           neighbor_group->liberties.erase(t_position(i, j));
           if (neighbor_group->liberties.size() == 0)
-            remove_stones(neighbor_group);
+            {
+              if (new_stone.get_group()->stones.size() == 1
+                  && neighbor_group->stones.size() == 1)
+                ko = *neighbor_group->stones.begin();
+              remove_stones(neighbor_group);
+            }
         }
       else
         {
@@ -263,45 +273,47 @@ Goban<goban_size>::play(unsigned short i, unsigned short j, t_color c)
               new_stone.get_group()->stones.insert(s);
               this->cell(s).set_group(new_stone.get_group());
             }
-          colorgroup.remove(neighbor_group); 
+          colorgroup.remove(neighbor_group);
         }
     }
-
   add_strong_links(i, j);
+  return true;
 }
 
 template<unsigned short goban_size>
 void
 Goban<goban_size>::determine_hoshis()
 {
-  auto insert = [&](unsigned short i, unsigned short j)
+  auto insert = [&](unsigned short i, unsigned short j, bool starter)
     {
-      hoshis.insert(*new t_position(i, j));
+      if (starter)
+        starting_stones.insert(t_position(i, j));
+      hoshis.insert(t_position(i, j));
     };
 
   if (goban_size == 13)
     {
-      insert(2, 2);
-      insert(2, 6);
-      insert(2, 10);
-      insert(6, 2);
-      insert(6, 6);
-      insert(6, 10);
-      insert(10, 2);
-      insert(10, 6);
-      insert(10, 10);
+      insert(3, 3, true);
+      insert(3, 6, false);
+      insert(3, 9, true);
+      insert(6, 3, false);
+      insert(6, 6, false);
+      insert(6, 9, false);
+      insert(9, 3, true);
+      insert(9, 6, false);
+      insert(9, 9, true);
     }
   else if (goban_size == 19)
     {
-      insert(3, 3);
-      insert(3, 9);
-      insert(3, 15);
-      insert(9, 3);
-      insert(9, 9);
-      insert(9, 15);
-      insert(15, 3);
-      insert(15, 9);
-      insert(15, 15);
+      insert(3, 3, true);
+      insert(3, 9, false);
+      insert(3, 15, true);
+      insert(9, 3, false);
+      insert(9, 9, false);
+      insert(9, 15, false);
+      insert(15, 3, true);
+      insert(15, 9, false);
+      insert(15, 15, true);
     }
   else
     std::cerr << "warning: goban has irregular size (" << goban_size
@@ -399,4 +411,5 @@ Goban<goban_size>::reset()
         board[i][j].color = Empty;
         board[i][j].set_group(nullptr);
       }
+  ko = t_position(PASS, PASS);
 }

@@ -85,16 +85,19 @@ gtp_play()
 
   unsigned short row = (unsigned short) move[0] - 'A';
   /* Deal with "I" */
-  if (row >= 9)
+  if (move [0]>= 'I')
     row--;
 
   unsigned short line = (unsigned short) move[1] - '0';
+  assert(move.length() >= 2);
   if (move[2] >= '0' && move[2] <= '9')
     line = line * 10 + (unsigned short) move[2] - '0';
   line--;
 
-  goban.play(row, line, (color == 'B') ? Black : White);
-  gtp_success("");
+  if (goban.play(row, line, (color == 'B') ? Black : White))
+    gtp_success("");
+  else
+    gtp_failure("ko detected");
 }
 
 void
@@ -109,8 +112,7 @@ gtp_genmove()
   if ((move.first == PASS) && (move.second == PASS))
    return  gtp_success("PASS");
 
-  move = goban.act_on_atari(player);
-  goban.play(move.first, move.second, player);
+  bool status = goban.play(move.first, move.second, player);
 
   /* Deal with "I" */
   if (move.first >= 8)
@@ -119,7 +121,10 @@ gtp_genmove()
   std::string s;
   s.push_back('A' + (char) move.first);
   s += std::to_string(move.second + 1);
-  gtp_success(s);
+  if (!status)
+    gtp_failure("genmove returned a ko: " + s);
+  else
+    gtp_success(s);
 }
 
 void
