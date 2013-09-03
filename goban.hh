@@ -71,8 +71,10 @@ public:
   void dump_moves();
   void dump_groups();
   void dump_links();
-  void play(unsigned short, unsigned short, t_color);
-  t_position act_on_atari(t_color player);
+  bool play(unsigned short, unsigned short, t_color);
+  t_position genmove(t_color player);
+  t_position genmove_liberty(t_color player);
+  t_position genmove_opening();
   void reset();
 
 private:

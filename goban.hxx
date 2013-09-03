@@ -179,42 +179,95 @@ Goban<goban_size>::remove_stones(t_group* stones)
 
 template<unsigned short goban_size>
 t_position
-Goban<goban_size>::act_on_atari(t_color player)
+Goban<goban_size>::genmove(t_color player)
 {
-  auto& playergroup = (player == Black ? black_groups : white_groups);
-  auto& othergroup = (player != Black ? black_groups : white_groups);
-  auto otherplayer = (player != Black ? Black : White);
+  auto move = genmove_opening();
+  if (move != t_position(PASS, PASS))
+    return move;
+  move = genmove_liberty(player);
+  return move;
+}
 
-  typedef std::pair<t_position, t_group*>   move;
-  std::set<move>                            moves;
+template<unsigned short goban_size>
+t_position
+Goban<goban_size>::genmove_opening()
+{
+  if (white_groups.size() + black_groups.size() < starting_stones.size())
+    for (auto candidate : starting_stones)
+      if (this->cell(candidate).color == Empty)
+        {
+          starting_stones.erase(candidate);
+          return candidate;
+        }
+  return t_position(PASS, PASS);
+}
 
-  for (auto g : othergroup)
-    for (auto m : g->liberties)
-      moves.insert(move(m, g));
-  for (auto g : playergroup)
-    for (auto m : g->liberties)
-        moves.insert(move(m, g));
+template<unsigned short goban_size>
+t_position
+Goban<goban_size>::genmove_liberty(t_color player)
+{
+  std::set<t_position> moves;
 
-  for (auto m : moves)
-    if (std::count_if(moves.begin(), moves.end(),
-                      [=](move x) -> bool {return (x.first == m.first); })
-        != 1)
-      ; // this sucks balls. This shouldn't happen, but it does.
+  auto select_legal_moves = [&](t_groups groups)
+    {
+      for (auto g : groups)
+        for (auto candidate : g->liberties)
+          {
+            // If the move is not a blatant suicide, consider it.
+            // Else, look for nearby atari.
+            if (0 < get_liberties(candidate.first, candidate.second,
+                                  player).size())
+              moves.insert(candidate);
+            else
+              for (auto n : get_neighbors(candidate))
+                if (this->cell(n).color != player
+                    && this->cell(n).get_group()->liberties.size() == 1)
+                  moves.insert(candidate);
+          }
+    };
+  select_legal_moves(white_groups);
+  select_legal_moves(black_groups);
+  moves.erase(ko);
+
   potential_moves.clear();
+
   for (auto m : moves)
     {
-      double oldlib = m.second->liberties.size();
-      double newlib = (double)get_liberties(m.first.first,
-                                            m.first.second, player).size();
-      double newli2 = (double)get_liberties(m.first.first,
-                                            m.first.second, otherplayer).size();
+      auto neli = 0;
+      double score = 1;
+      std::cerr << "=> scoring " << m << std::endl;
+      for (auto n : get_neighbors(m))
+        {
+          std::cerr << " - " << n << " ";
+          auto cell = this->cell(n);
+          auto g = cell.get_group();
+          auto lib = g->liberties.size();
+          double prog = 0;
+          auto other = player == Black ? White : Black;
+          if (cell.color == player)
+            {
+              neli = get_liberties(m.first, m.second, player).size();
+              prog = (double) neli / lib;
+            }
+          if (cell.color != player)
+            {
+              neli = lib - 1;
+              if (neli == 0)
+                prog = g->stones.size() + 1.5; // atari (regardless of group size) is +2.1
+              else
+                prog = 1.4 * (double) lib / neli;
+            }
+          std::cerr << (cell.color == player ? "P " : "NP ");
+          std::cerr << " liberties " << lib << "->" << neli;
 
-      double w =  2*LIBERTY_REM * (newli2 / oldlib);
-      double w2 = LIBERTY_ADD * (newlib / oldlib);
-      std::cerr << "move (" << m.first.first << ", " << m.first.second << ") w="
-        << w << " w2=" << w2 << " oldlib=" << oldlib << " newlib=" << newlib << std::endl;
-      w += w2;
-      potential_moves.push_back(t_weighed_stone(m.first, w));
+          std::cerr << " (progress = " << prog << ")";
+          if (neli == 0)
+            std::cerr << "(kill " << g->stones.size() << ")";
+          std::cerr << std::endl;
+          score *= prog;
+        }
+      std::cerr << "final score: " << score << std::endl;
+      potential_moves.push_back(t_weighed_stone(m, score));
     }
   std::sort(potential_moves.begin(),
             potential_moves.end(),
