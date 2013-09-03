@@ -8,7 +8,8 @@ OBJS := $(patsubst %.cc, %.o, $(SOURCE))
 # Compilation related
 CXX=clang++
 CXXDEBUG=-ggdb3
-CXXFLAGS=-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic \
+CXXFLAGS=-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic	\
+	 -Wno-global-constructors -Wno-exit-time-destructors		\
 	 --std=c++11 $(CXXDEBUG)
 DEFINES=-D__GOBAN_SIZE=$(SIZE) -D__NAME=$(NAME)
 

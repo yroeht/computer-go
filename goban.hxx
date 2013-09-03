@@ -23,7 +23,7 @@
 inline
 std::ostream& operator<<(std::ostream& os, const t_position& pos)
 {
-  char row = pos.first + 'A';
+  char row = (char) pos.first + 'A';
   if (row >= 'I')
     ++row;
   os << row << pos.second + 1;
@@ -203,7 +203,7 @@ Goban<goban_size>::genmove_opening()
           if (!alternatives.empty())
             {
               auto it = alternatives.begin();
-              std::advance(it, rand() % alternatives.size());
+              std::advance(it, (unsigned long) rand() % alternatives.size());
               return *it;
             }
         }
