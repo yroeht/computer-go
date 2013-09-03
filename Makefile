@@ -1,7 +1,7 @@
 # Project related
 NAME?=Goku
 SIZE?=13
-PROGRAM=ai
+PROGRAM=goku
 SOURCE=gtp.cc main.cc
 OBJS := $(patsubst %.cc, %.o, $(SOURCE))
 
