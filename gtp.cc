@@ -81,7 +81,7 @@ gtp_play()
   std::cin >> move;
 
   if (move.compare("PASS") == 0)
-    gtp_success("");
+    return gtp_success("");
 
   unsigned short row = (unsigned short) move[0] - 'A';
   /* Deal with "I" */
