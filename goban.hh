@@ -74,7 +74,7 @@ public:
   bool play(unsigned short, unsigned short, t_color);
   t_position genmove(t_color player);
   t_position genmove_liberty(t_color player);
-  t_position genmove_opening();
+  t_position genmove_opening(t_color player);
   void reset();
 
 private:

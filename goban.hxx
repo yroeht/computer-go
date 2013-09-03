@@ -181,7 +181,7 @@ template<unsigned short goban_size>
 t_position
 Goban<goban_size>::genmove(t_color player)
 {
-  auto move = genmove_opening();
+  auto move = genmove_opening(player);
   if (move != t_position(PASS, PASS))
     return move;
   move = genmove_liberty(player);
@@ -190,13 +190,15 @@ Goban<goban_size>::genmove(t_color player)
 
 template<unsigned short goban_size>
 t_position
-Goban<goban_size>::genmove_opening()
+Goban<goban_size>::genmove_opening(t_color player)
 {
   for (auto candidate : starting_stones)
     {
       starting_stones.erase(candidate);
       if (this->cell(candidate).color == Empty)
         return candidate;
+      else if (this->cell(candidate).color == player) // handicap placed
+        continue;
       else
         {
           auto alternatives = get_liberties(candidate);
