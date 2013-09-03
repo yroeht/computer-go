@@ -76,7 +76,9 @@ private:
   void      remove_stones(t_group*);
   void      dump_group(t_groups);
   void      add_strong_links(unsigned short i, unsigned short j);
-  t_stones  list_neighbors(unsigned short i, unsigned short j);
+  t_stones  get_neighbors(const t_position pos);
+  t_stones  get_neighbors(unsigned short i, unsigned short j);
+  t_stones  get_liberties(const t_position pos);
   t_stones  get_liberties(unsigned short i, unsigned short j);
   t_stones  get_liberties(unsigned short i, unsigned short j, t_color c);
 };

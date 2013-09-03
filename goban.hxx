@@ -103,6 +103,13 @@ Goban<goban_size>::get_liberties(unsigned short i, unsigned short j)
 }
 
 template<unsigned short goban_size>
+t_stones
+Goban<goban_size>::get_liberties(const t_position pos)
+{
+  return get_liberties(pos.first, pos.second);
+}
+
+template<unsigned short goban_size>
 void
 Goban<goban_size>::add_strong_links(unsigned short i, unsigned short j)
 {
@@ -148,10 +155,8 @@ Goban<goban_size>::add_strong_links(unsigned short i, unsigned short j)
 
 template<unsigned short goban_size>
 t_stones
-Goban<goban_size>::list_neighbors(unsigned short i, unsigned short j)
+Goban<goban_size>::get_neighbors(unsigned short i, unsigned short j)
 {
-  assert(board[i][j].color != Empty);
-
   t_stones ret;
 
   auto process = [&](unsigned short x, unsigned short y)
@@ -167,12 +172,20 @@ Goban<goban_size>::list_neighbors(unsigned short i, unsigned short j)
 }
 
 template<unsigned short goban_size>
+t_stones
+Goban<goban_size>::get_neighbors(t_position pos)
+{
+  return get_neighbors(pos.first, pos.second);
+}
+
+
+template<unsigned short goban_size>
 void
 Goban<goban_size>::remove_stones(t_group* stones)
 {
   for (auto stone : stones->stones)
     {
-      for (auto neighbor : list_neighbors(stone.first, stone.second))
+      for (auto neighbor : get_neighbors(stone.first, stone.second))
         this->cell(neighbor).get_group()->liberties.insert(stone);
       auto& cell = this->cell(stone);
       (cell.color == Black ? black_groups : white_groups).remove(stones);
@@ -247,7 +260,7 @@ Goban<goban_size>::play(unsigned short i, unsigned short j, t_color c)
   new_stone.get_group()->liberties = get_liberties(i, j);
   colorgroup.push_front(new_stone.get_group());
 
-  for (auto nei : list_neighbors(i, j))
+  for (auto nei : get_neighbors(i, j))
     {
       auto &neighbor = this->cell(nei);
       auto neighbor_group = neighbor.get_group();
