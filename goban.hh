@@ -6,6 +6,7 @@
 # include <vector>
 # include <ostream>
 
+# define PASS 999
 
 typedef enum {
     Empty,

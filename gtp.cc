@@ -80,6 +80,9 @@ gtp_play()
   std::string move;
   std::cin >> move;
 
+  if (move.compare("PASS") == 0)
+    gtp_success("");
+
   unsigned short row = (unsigned short) move[0] - 'A';
   /* Deal with "I" */
   if (row >= 9)
@@ -102,6 +105,9 @@ gtp_genmove()
   t_color player = (color == 'b') ? Black : White;
 
   t_position move;
+  move = goban.genmove(player);
+  if ((move.first == PASS) && (move.second == PASS))
+   return  gtp_success("PASS");
 
   move = goban.act_on_atari(player);
   goban.play(move.first, move.second, player);

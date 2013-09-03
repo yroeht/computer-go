@@ -221,7 +221,9 @@ Goban<goban_size>::act_on_atari(t_color player)
               return a.second < b.second;
               });
 
-  t_weighed_stone best_move(t_position(5, 5), -10000);
+  /* 'pass' should be something like (0, 0) or (-1, -1), alas our
+  ** representation is 0-based and unsigned.  */
+  t_weighed_stone best_move(t_position(PASS, PASS), 1);
   for (auto m : potential_moves)
     if (m.second > best_move.second)
       best_move = m;
