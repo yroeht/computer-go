@@ -260,7 +260,7 @@ Goban<goban_size>::genmove_liberty(t_color player)
               if (neli == 0)
                 prog = g->stones.size() + 1.5; // atari (regardless of group size) is +2.1
               else
-                prog = 1.4 * (double) lib / neli;
+                prog = (double) lib / neli;
             }
           std::cerr << (cell.color == player ? "P " : "NP ");
           std::cerr << " liberties " << lib << "->" << neli;
