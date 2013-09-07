@@ -314,18 +314,32 @@ Goban<goban_size>::genmove_liberty(t_color player)
 
   /* 'pass' should be something like (0, 0) or (-1, -1), alas our
   ** representation is 0-based and unsigned.  */
-  t_weighed_stone best_move(t_position(PASS, PASS), 0.0);
   if (potential_moves.size() == 0)
-    return best_move.first;
+    return t_position(PASS, PASS);
 
+  t_stones best_moves;
+  double best_score = 0.0;
   for (auto m : potential_moves)
-    if (m.second > best_move.second)
-      best_move = m;
-  std::cerr << "best move: " << best_move.first
-    << " (" << best_move.second << ")" << std::endl;
-  if (best_move.second <= 0.8
-      && best_move.first != t_position(PASS, PASS))
-    for (auto alt : get_liberties(best_move.first))
+    {
+      if (m.second - best_score > 0.001)
+        best_moves.insert(m.first);
+      else if (m.second > best_score)
+        {
+          best_moves.clear();
+          best_moves.insert(m.first);
+          best_score = m.second;
+        }
+    }
+  srand((unsigned int) time(0));
+  auto it = best_moves.begin();
+  std::advance(it, (unsigned long) rand() % best_moves.size());
+
+  auto best_move = *it;
+  std::cerr << "best move: " << best_move
+    << " (" << best_score << ")" << std::endl;
+
+  if (best_score <= 0.8)
+    for (auto alt : get_liberties(best_move))
       {
         if (moves.count(alt))
           std::cerr << "alt " << alt << " was found" << std::endl;
@@ -335,7 +349,7 @@ Goban<goban_size>::genmove_liberty(t_color player)
             return alt;
           }
       }
-  return best_move.first;
+  return best_move;
 }
 
 template<unsigned short goban_size>
