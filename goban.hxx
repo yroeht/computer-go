@@ -469,11 +469,11 @@ template<unsigned short goban_size>
 void
 Goban<goban_size>::dump_groups()
 {
-  std::cout << "Begin black groups dump:" << std::endl;
+  std::cerr << "Begin black groups dump:" << std::endl;
   dump_group(black_groups);
-  std::cout << "Begin white groups dump:" << std::endl;
+  std::cerr << "Begin white groups dump:" << std::endl;
   dump_group(white_groups);
-  std::cout << "End groups dump." << std::endl;
+  std::cerr << "End groups dump." << std::endl;
 }
 
 template<unsigned short goban_size>
@@ -482,14 +482,13 @@ Goban<goban_size>::dump_group(t_groups groups)
 {
   for (auto group : groups)
     {
-      std::cout << " - " << group->liberties.size() << "L (" << group << ") ";
       for (auto cell : group->stones)
-        std::cout << "(" << cell << this->cell(cell).get_group() << ") ";
-      std::cout << std::endl;
-      std::cout << "   lib: ";
+        std::cerr << cell << " " << this->cell(cell).get_group() << " ";
+      std::cerr << std::endl;
+      std::cerr << "   lib: ";
       for (auto cell : group->liberties)
-        std::cout << cell;
-      std::cout << std::endl;
+        std::cerr << cell << " ";
+      std::cerr << std::endl;
     }
 }
 
