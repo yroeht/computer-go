@@ -7,6 +7,7 @@ OBJS := $(patsubst %.cc, %.o, $(SOURCE))
 
 # Compilation related
 CXX=clang++
+HXX=goban.hxx cell.hxx
 CXXDEBUG=-ggdb3
 CXXFLAGS=-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic	\
 	 -Wno-global-constructors -Wno-exit-time-destructors		\
@@ -24,7 +25,7 @@ all: $(PROGRAM)
 $(PROGRAM): $(OBJS)
 	$(CXX) $(CXXFLAGS) -I . $(OBJS) -o $@
 
-%.o: %.cc
+%.o: %.cc $(HXX)
 	$(CXX) $(CXXFLAGS) -I . $(DEFINES) -c $< -o $@
 
 mostlyclean:
