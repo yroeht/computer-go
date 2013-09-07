@@ -312,10 +312,6 @@ Goban<goban_size>::genmove_liberty(t_color player)
               return a.second < b.second;
               });
 
-  /* 'pass' should be something like (0, 0) or (-1, -1), alas our
-  ** representation is 0-based and unsigned.  */
-  if (potential_moves.size() == 0)
-    return t_position(PASS, PASS);
 
   t_stones best_moves;
   double best_score = 0.0;
@@ -330,6 +326,12 @@ Goban<goban_size>::genmove_liberty(t_color player)
           best_score = m.second;
         }
     }
+
+  /* 'pass' should be something like (0, 0) or (-1, -1), alas our
+  ** representation is 0-based and unsigned.  */
+  if (best_moves.empty())
+    return t_position(PASS, PASS);
+
   srand((unsigned int) time(0));
   auto it = best_moves.begin();
   std::advance(it, (unsigned long) rand() % best_moves.size());
