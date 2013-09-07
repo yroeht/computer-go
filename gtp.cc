@@ -149,4 +149,5 @@ gtp_loop()
 void gtp_showboard()
 {
   goban.dump();
+  gtp_success("");
 }
