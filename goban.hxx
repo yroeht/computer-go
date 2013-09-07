@@ -378,6 +378,9 @@ Goban<goban_size>::play(unsigned short i, unsigned short j, t_color c)
               new_stone.get_group()->stones.insert(s);
               this->cell(s).set_group(new_stone.get_group());
             }
+          for (auto l : neighbor_group->liberties)
+            new_stone.get_group()->liberties.insert(l);
+          new_stone.get_group()->liberties.erase(t_position(i, j));
           colorgroup.remove(neighbor_group);
         }
     }
