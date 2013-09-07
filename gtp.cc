@@ -44,7 +44,7 @@ gtp_protocol_version()
 void
 gtp_version()
 {
-  gtp_success("0.2 dev");
+  gtp_success("0.2");
 }
 
 void
@@ -132,7 +132,6 @@ gtp_loop()
 {
   while (true)
     {
-//      gtp_showboard();
       std::string input;
       std::cin >> input;
       auto i = 0;
