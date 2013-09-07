@@ -233,52 +233,77 @@ Goban<goban_size>::genmove_liberty(t_color player)
   select_legal_moves(white_groups);
   select_legal_moves(black_groups);
   moves.erase(ko);
+  std::cerr << "moves: ";
+  for (auto a: moves)
+    std::cerr << a << " ";
+  std::cerr << std::endl;
 
   potential_moves.clear();
 
   for (auto m : moves)
     {
       std::set<t_group*> neighbor_groups;
-      double score = 1;
-      std::cerr << "=> scoring " << m << std::endl;
+      std::list<t_motiv> scoring;
+
       for (auto n : get_neighbors(m))
         {
           auto cell = this->cell(n);
           auto group = cell.get_group();
           auto lib = group->liberties.size();
-          double prog = 0;
-          unsigned long neli = 0;
 
           // A move affects groups, not single stones: if it is in contact with
           // two stones of a group, it's effect is not doubled.
           if (false == neighbor_groups.insert(group).second)
             continue;
-          std::cerr << " - " << n << " ";
 
+          auto neli = get_liberties(m.first, m.second, player).size();
           if (cell.color == player)
             {
-              neli = get_liberties(m.first, m.second, player).size();
-              prog = (double) neli / lib;
+              if (lib == 1 && neli > lib)
+                scoring.push_front(Atari_esc);
+              if (lib < 3 && neli >= 3)
+                scoring.push_front(Lib_suf);
+              if (lib < neli)
+                scoring.push_front(Lib_inc);
             }
           if (cell.color != player)
             {
-              neli = lib - 1;
-              if (neli == 0)
-                prog = group->stones.size() + 1.5; // atari (regardless of group size) is +2.1
+              for (auto v : get_neighbors(n))
+                if (this->cell(v).get_group()->liberties.size() == 1)
+                  scoring.push_front(Atari_esc);
+              if (lib == 1)
+                scoring.push_front(Kill);
+              if (lib == 2)
+                scoring.push_front(Atari_set);
               else
-                prog = (double) lib / neli;
+                scoring.push_front(Lib_dec);
             }
-          std::cerr << (cell.color == player ? "P " : "NP ");
-          std::cerr << " liberties " << lib << "->" << neli;
-
-          std::cerr << " (progress = " << prog << ")";
-          if (neli == 0)
-            std::cerr << "(kill " << group->stones.size() << ")";
-          std::cerr << std::endl;
-          score *= prog;
         }
-      std::cerr << "final score: " << score << std::endl;
-      potential_moves.push_back(t_weighed_stone(m, score));
+      if (1 == get_liberties(m.first, m.second, player).size())
+        scoring.push_front(Atari_self);
+      else if (0 == get_liberties(m.first, m.second, Empty).size())
+        scoring.push_front(Fill);
+
+      std::cerr << m << " scoring:";
+      //if (scoring.find(Atari_esc))
+      for (auto x : scoring)
+        if (x == Kill)
+          {
+            scoring.remove(Atari_self);
+            scoring.remove(Fill);
+          }
+      for (auto x : scoring)
+        if (x == Atari_esc)
+          scoring.remove(Atari_set);
+      double weight = 0;
+      for (auto s : scoring)
+        {
+          std::cerr << " " << scorer[s].str;
+          weight += scorer[s].value;
+        }
+      std::cerr << std::endl;
+      //std::cerr << "=> " << weight << std::endl;
+      potential_moves.push_back(t_weighed_stone(m, weight));
     }
   std::sort(potential_moves.begin(),
             potential_moves.end(),
@@ -289,11 +314,27 @@ Goban<goban_size>::genmove_liberty(t_color player)
 
   /* 'pass' should be something like (0, 0) or (-1, -1), alas our
   ** representation is 0-based and unsigned.  */
-  t_weighed_stone best_move(t_position(PASS, PASS), 1);
+  t_weighed_stone best_move(t_position(PASS, PASS), 0.0);
+  if (potential_moves.size() == 0)
+    return best_move.first;
+
   for (auto m : potential_moves)
     if (m.second > best_move.second)
       best_move = m;
-  std::cerr << "best move: " << best_move.first << std::endl;
+  std::cerr << "best move: " << best_move.first
+    << " (" << best_move.second << ")" << std::endl;
+  if (best_move.second <= 0.8
+      && best_move.first != t_position(PASS, PASS))
+    for (auto alt : get_liberties(best_move.first))
+      {
+        if (moves.count(alt))
+          std::cerr << "alt " << alt << " was found" << std::endl;
+        else
+          {
+            std::cerr << "playing alt " << alt << std::endl;
+            return alt;
+          }
+      }
   return best_move.first;
 }
 

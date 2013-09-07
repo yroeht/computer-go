@@ -132,7 +132,7 @@ gtp_loop()
 {
   while (true)
     {
-      gtp_showboard();
+//      gtp_showboard();
       std::string input;
       std::cin >> input;
       auto i = 0;
