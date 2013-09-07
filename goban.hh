@@ -12,8 +12,14 @@
 typedef std::pair<t_position, double>       t_weighed_stone;
 typedef std::vector<t_weighed_stone>        t_weighed_stones;
 
-typedef std::pair<t_position, t_position>   t_strong_link;
-typedef std::set<t_strong_link>             t_strong_links;
+typedef struct
+{
+  t_position first;
+  t_position second;
+  t_color    color;
+} t_strong_link;
+
+typedef std::list<t_strong_link>            t_strong_links;
 
 typedef std::list<t_group*> t_groups;
 

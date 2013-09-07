@@ -94,7 +94,13 @@ Goban<goban_size>::add_strong_links(unsigned short i, unsigned short j)
       if ( board[ii][j].color == Empty
           && board[i][jj].color == Empty
           && board[ii][jj].color == board[i][j].color)
-        strong_links.insert(t_strong_link(t_position(ii, j), t_position(i,jj)));
+        {
+          t_strong_link link;
+          link.first = t_position(ii, j);
+          link.second = t_position(i, jj);
+          link.color = board[i][j].color;
+          strong_links.push_front(link);
+        }
     };
 
   /* NW */
@@ -199,6 +205,19 @@ Goban<goban_size>::genmove_liberty(t_color player)
       for (auto g : groups)
         for (auto candidate : g->liberties)
           {
+            auto miai = std::find_if(strong_links.begin(),
+                                     strong_links.end(),
+                                     [=](t_strong_link link) -> bool {
+                                     return ((link.color == player)
+                                             && (link.first == candidate
+                                                 || link.second == candidate)); });
+            if (miai != strong_links.end() )
+              {
+                std::cerr << candidate << ": disgarding miai " << (*miai).first << " "
+                  << (*miai).second << std::endl;
+                continue;
+              }
+
             // If the move is not a blatant suicide, consider it.
             // Else, look for nearby atari.
             if (0 < get_liberties(candidate.first, candidate.second,
@@ -322,6 +341,12 @@ Goban<goban_size>::play(unsigned short i, unsigned short j, t_color c)
         }
     }
   add_strong_links(i, j);
+  std::remove_if(strong_links.begin(),
+                 strong_links.end(),
+                 [i,j](t_strong_link link ) -> bool {
+                 return (link.first == t_position(i, j)
+                         || link.second == t_position(i, j));
+                 });
   return true;
 }
 
