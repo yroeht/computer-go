@@ -15,7 +15,7 @@ Cell::Cell(unsigned short i, unsigned short j, t_color color_)
 
 inline
 t_group*
-Cell::get_group()
+Cell::get_group() const
 {
   return this->group;
 }

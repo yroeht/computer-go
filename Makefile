@@ -2,12 +2,11 @@
 NAME?=Goku
 SIZE?=13
 PROGRAM=goku
-SOURCE=gtp.cc main.cc
+SOURCE= $(addprefix src/,golib.cc genmove.cc gtp.cc main.cc)
 OBJS := $(patsubst %.cc, %.o, $(SOURCE))
 
 # Compilation related
 CXX=clang++
-HXX=goban.hxx cell.hxx
 CXXDEBUG=-ggdb3
 CXXFLAGS=-Weverything -Wno-c++98-compat -Wno-c++98-compat-pedantic	\
 	 -Wno-global-constructors -Wno-exit-time-destructors		\
@@ -23,10 +22,10 @@ TWOGTP+=-sgffile `date +%s` -debugtocomment -verbose"
 all: $(PROGRAM)
 
 $(PROGRAM): $(OBJS)
-	$(CXX) $(CXXFLAGS) -I . $(OBJS) -o $@
+	$(CXX) $(CXXFLAGS) -I src $(OBJS) -o $@
 
 %.o: %.cc $(HXX)
-	$(CXX) $(CXXFLAGS) -I . $(DEFINES) -c $< -o $@
+	$(CXX) $(CXXFLAGS) -I src $(DEFINES) -c $< -o $@
 
 mostlyclean:
 	rm -vf $(OBJS)
