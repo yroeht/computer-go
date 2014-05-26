@@ -26,6 +26,6 @@ Example game
 This is a game that was played between this AI (black) and the montecarlo one
 (white). The result as a total victory for black.
 
-![alt text](http://imgur.com/mBEoB8B "sample game")
+![alt text](http://imgur.com/mBEoB8B.jpg "sample game")
 
 Other games have been well balanced, or even total white victory.
