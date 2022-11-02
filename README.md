@@ -1,5 +1,5 @@
-gorilla
-=======
+Computer Go
+===========
 
 Good Old Fashioned AI
 ---------------------
